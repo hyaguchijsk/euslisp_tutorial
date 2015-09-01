@@ -1,2 +1,6 @@
 site_name: euslisp tutorial
+pages:
+- Home: index.md
+- Basic Coding: basic_coding.md
 theme: readthedocs
+
