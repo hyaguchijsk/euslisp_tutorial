@@ -254,4 +254,30 @@ Z軸周りの回転は任意でよい，ということも考えられます．
 (send *sr* :angle-vector (send *ri* :potentio-vector))
 ```
 
+## 足の使い方
 
+ロボットを特定のスポットに移動するには，`:fix-leg-to-coords`を使います．
+
+```
+(send *sr* :fix-leg-to-coords (make-coords) :both)
+```
+
+ここで最後の`:both`は両足の中心を所定の座標に移動するという意味で．
+`:rleg`, `:lleg`を指定するとそれぞれの足の中心が基準となります．
+
+二足歩行ロボットの場合，静的にバランスを計算し，
+重心が支持多角形の中心に来るように足を動かすことができます．
+
+```
+(send *sr* :reset-pose)
+(send *sr* :rarm :shoulder-r :joint-angle -90)
+(send *sr* :larm :shoulder-r :joint-angle 90)
+(send *sr* :rleg :move-end-pos (float-vector 0 -100 100))
+(send *sr* :move-centroid-on-foot :lleg '(:lleg))
+```
+
+![samplerobot_foot_00](figure/samplerobot_foot_00.jpg)
+
+この例では，左足の上に重心が来るように，左足を動かしています．
+`:move-centroid-on-foot`の第一引数はどの足の上に重心を動かすかを指定し，
+第二引数はどの足を動かすかをリストで与えます．
