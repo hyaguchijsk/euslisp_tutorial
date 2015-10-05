@@ -1,13 +1,13 @@
-# euslisp tutorial
+# EusLisp tutorial
 
 ## About
 
-euslispは，
+EusLispは，
 ロボットプログラミングのための様々な機能を持ったLispライク処理系です．
 
 このチュートリアルは，
 他の言語ではある程度経験があるが，
-euslispについては全くの初心者に向けて記述しています．
+EusLispについては全くの初心者に向けて記述しています．
 
 言語仕様や一歩進んだ使い方について，より詳しく知りたい時は，
 [manual]を参照してください．
@@ -17,7 +17,67 @@ euslispについては全くの初心者に向けて記述しています．
 [manual]: http://euslisp.github.io/jskeus/jmanual.html
 
 
+### EusLispの特徴
+
+- ロボットプログラミングに特化した開発環境です．
+- その根底には充実した三次元幾何ライブラリがあります．
+- OpenHRP,ROSとのブリッジを持ち，それらに対応した多数のロボットが動かせます．
+
+
 ## Install
+
+ROSがインストールされていることが前提となります．
+[ROS/Installation]を参考にインストールしてください．
+また，[wstool],[catkin-tools]もあわせてインストールすると便利です．
+
+```bash
+sudo apt-get install python-wstool python-catkin-tools
+```
+
+インストール終了後，catkinのワークスペースを作ってください．
+例えば以下のようにします．
+
+```bash
+mkdir ~/catkin_ws
+cd ~/catkin_ws
+wstool init src
+catkin init
+catkin build
+source ~/catkin_ws/devel/setup.bash
+```
+
+### ROSをインストールしてあり，手動でインストールする場合
+
+`ros-<ROS_DISTRO>-roseus`というパッケージが提供されています．
+indigoの場合，以下のようにインストールできます．
+
+```bash
+sudo apt-get install ros-indigo-roseus
+```
+
+また，本チュートリアルで紹介するロボットモデルを利用するためには，
+[rtmros_common]のインストールを行なってください．
+
+```bash
+sudo apt-get install ros-indigo-hrpsys-ros-bridge ros-indigo-euscollada ros-indigo-pr2eus
+```
+
+および，catkinのワークスペースに[rtmros_tutorials]をダウンロードしてください．
+```bash
+cd <catkin_ws>/src
+wstool set rtm-ros-robotics/rtmros_tutorials https://github.com/start-jsk/rtmros_tutorials.git --git
+wstool update rtm-ros-robotics/rtmros_tutorials
+cd rtm-ros-robotics/rtmros_tutorials/hrpsys_ros_bridge_tutorials
+catkin bt
+```
+[ROS/Installation]: http://wiki.ros.org/ROS/Installation
+[wstool]: http://wiki.ros.org/wstool
+[catkin-tools]: https://catkin-tools.readthedocs.org/en/latest/
+[rtmros_common]: http://wiki.ros.org/rtmros_common/Tutorials/WorkingWithEusLisp
+[rtmros_tutorials]: https://github.com/start-jsk/rtmros_tutorials
+
+
+### インストーラを利用して最初からインストールする場合
 
 [jsk_common]を利用することで，
 ros, hrpsys, euslispを含む
@@ -36,7 +96,7 @@ euslispはインタプリタを用いて動作させることが基本です．
 - 最低限の機能を起動
 
 ```bash
-eus
+eusgl
 ```
 
 - irteus拡張 + GUIを読み込んで起動
@@ -137,6 +197,3 @@ roseus test.l
 ```
 
 としましょう．
-
-
-
