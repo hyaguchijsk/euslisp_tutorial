@@ -10,11 +10,11 @@ EusLispは，
 EusLispについては全くの初心者に向けて記述しています．
 
 言語仕様や一歩進んだ使い方について，より詳しく知りたい時は，
-[manual]を参照してください．
+[本家のドキュメント][euslisp-doc]を参照してください．
 
 ロボット工学に関する知識はロボット工学の教科書を参照してください．
 
-[manual]: http://euslisp.github.io/jskeus/jmanual.html
+[euslisp-doc]: http://euslisp-docs.readthedocs.org/en/latest/
 
 
 ### EusLispの特徴
