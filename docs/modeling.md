@@ -212,21 +212,6 @@ irteus拡張のモデルを作りましょう．
 
 (setq *myroom* (instance myroom-scene :init))
 (objects (list *myroom*))
-
-     (send tablespot :translate (float-vector -1400 600 0))
-     (send tablespot :rotate pi :z)
-     (send bedspot :translate (float-vector 1250 100 0))
-     (send bedspot :rotate -pi/2 :z)
-
-
-     (setq objs (list walls table bed tablespot bedspot))
-     (send-super :init :name name :objects objs)
-     )
-   self)
-  )
-
-(setq *myroom* (instance myroom-scene :init))
-(objects (list *myroom*))
 ```
 
 ![modeling_myroom_00](figure/modeling_myroom_00.jpg)
