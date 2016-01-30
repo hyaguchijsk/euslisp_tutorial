@@ -5,4 +5,5 @@ pages:
 - Geometric Coding: geo_coding.md
 - Robot Coding: robot_coding.md
 - Modeling: modeling.md
+- Advanced Coding: advanced_coding.md
 theme: readthedocs
