@@ -13,19 +13,18 @@ The explanation below is for irteusgl and afterwards (including roseus).
 
 ![geo_irtviewer](figure/geo_irtviewer.jpg)
 
-This viewer can be accessed by the global variable `*irtviewer*`
+This viewer can be accessed by the global variable `*irtviewer*`.
 The view angle can be changed by dragging around the center.
 The left and bottom sides are used to adjust the view point.
 The right and top sides are used to zoom in and out.
-It differs from the most 3D software, so please be aware of the above.
+It differs from most 3D software, so please be aware of the above.
 
-The viewer can be updated by clicking it or using `:draw-objects`, which is particularly necessary for loop animations.
+The viewer can be updated by clicking it or using `:draw-objects`, which is particularly necessary for loop animations. Updating the objects usually do not cause the viewer to get updated.
 
 ```
 (send *irtviewer* :draw-objects)
 ```
 
-Updating the objects usually do not cause the viewer to get updated.
 The following is used to allow mouse interruption during loop animation.
 
 ```
@@ -67,7 +66,7 @@ When the viewer is clicked or `draw-objects` gets called, the viewer is updated.
 ![geo_cube_01](figure/geo_cube_01.jpg)
 
 
-Similarly, `make-cylinder`,`make-cone` and other functions are provided.
+Similarly, `make-cylinder`, `make-cone` and other functions are provided.
 Details are given in [Basic body functions (Japanese)].
 
 [Basic body functions (Japanese)]: http://euslisp.github.io/jskeus/jmanual-node118.html
@@ -75,15 +74,15 @@ Details are given in [Basic body functions (Japanese)].
 
 ## Vector operations
 
-Simple operations can be performed with `v+`,`v-`,`v.`,`v*`. `v++` is used to sum more than two vectors.
+Simple operations can be performed with `v+`, `v-`, `v.` and `v*`. For summing more than two vectors, `v++` is used.
 
 ```
 (setq *v0* (float-vector 1 2 3)
       *v1* (float-vector 4 5 6))
 (print (v+ *v0* *v1*))
 (print (v- *v0* *v1*))
-(print (v. *v0* *v1*))  ;; 内積
-(print (v* *v0* *v1*))  ;; 外積
+(print (v. *v0* *v1*))  ;; Inner product
+(print (v* *v0* *v1*))  ;; Outer product
 ```
 
 `scale` is used to multiply by a scalar.
@@ -180,7 +179,7 @@ Instead of `make-coords`, `make-cascoords` is used.
 (setq *casco* (make-cascoords))
 (setq *casco2* (make-cascoords :pos (float-vector 100 0 0) :parent *casco*))
 ```
-In the above, `*casco*` and `*casoco2*`are created and linked.
+In the above, `*casco*` and `*casoco2*` are created and linked.
 It is also possible to link already created coordinates with `:assoc`.
 
 In the following, translating the parent `*casco*` also causes `casco2*` to be moved the same way.

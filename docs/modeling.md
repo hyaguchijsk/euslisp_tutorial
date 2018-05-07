@@ -23,10 +23,10 @@ Using this, the object described at [geo_coding](geo_coding.md) can be rewritten
 
 ## Multiple link model (cascaded-link)
 
-`cascaded-link`is the base for describing a multiple link model.
-In the `samplerobot` example, in [robot_coding](robot_coding.md), objects given by `(send *sr* :rarm)` are of type `cascaded-link`.
+`cascaded-link` is the base for describing a multiple link model.
+In the `samplerobot` example (refer [robot_coding](robot_coding.md)), objects given by `(send *sr* :rarm)` are of type `cascaded-link`.
 
-`cascaded-link` adds joint angle information from the `joint` class to the link information from `bodyset-link` class.
+`cascaded-link` adds joint angle information from `joint` class to the link information from `bodyset-link` class.
 
 ### bodyset-link
 
@@ -37,7 +37,7 @@ Since it is a child of `bodyset` class, it can be created the same way.
 
 `joint` is the lowest class able to represent joints, as the name points out.
 Main types are `rotational-joint` and `linear-joint`.
-During `:init`, it is possible to join links by setting :parent-link` and `:child-link`.
+During `:init`, it is possible to join links by setting `:parent-link` and `:child-link`.
 Please note that the reference is the `child-link` coordinates.
 
 ### Creating multiple link models

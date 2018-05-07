@@ -36,8 +36,8 @@ Regarding line comments:
 
 ## Lists
 
-In EusLisp there is no array, and linear lists are used.
-Objects of different types can also be stored in the same list.
+In EusLisp linear lists are used, and there is no array.
+Objects of different types can be stored in the same list.
 
 ### Creating lists
 
@@ -103,7 +103,7 @@ An element can be added with `push` (destructive) or `cons` (not destructive).
 ;; (-1 0 1 2 3)
 ```
 
-`pop` takes the first element on the list destructively.
+`pop` takes out the first element of the list destructively.
 ```
 (pop *list*)
 ;; -1
@@ -124,7 +124,7 @@ An element can be added with `push` (destructive) or `cons` (not destructive).
 
 ### unless
 
-`unless`is the opposite of `when`, being executed when the condition is `nil`.
+`unless` is the opposite of `when`, being executed when the condition is `nil`.
 
 ```
 (unless condition
@@ -147,8 +147,8 @@ An element can be added with `push` (destructive) or `cons` (not destructive).
   (print "default")))
 ```
 
-In `cond` the first element of each s-expression is evaluated in order. If it is `non-nil` the rest of the s-expression is executed and `cond` exits; if it is `nil` the next s-expression condition is evaluated.
-In the above, the `t` condition is executed when all of the above conditions did not apply (i.e. \*val\* is different from 0 and 1).
+In `cond`, the first element of each s-expression is evaluated in order. If it is `non-nil` the rest of the s-expression is executed and `cond` exits; if it is `nil` the next s-expression condition is evaluated.
+In the above, the `t` condition is executed when all of the above conditions do not apply (i.e. \*val\* is different from 0 and 1).
 
 ### if
 
@@ -174,14 +174,14 @@ Because `if` only deals with single s-expressions, `progn` is used for evaluatin
 
 ### dotimes
 
-Similar to the `for` statement.
+Similar to `for` statement.
 
 ```
 (dotimes (i 10)
   (print i))
 ```
 
-In the above, `print` is executed fro `i` values from `0` to `9`.
+In the above, `print` is executed for `i` values from `0` to `9`.
 
 
 ### dolist
@@ -206,13 +206,13 @@ Loops while the condition is `non-nil`.
   (setq i (+ 1 i)))
 ```
 
-The above is similar to above `dotimes` example.
+The above is similar to the `dotimes` example above.
 (However, here `i` is a global variable)
 
 
 ### do-until-key
 
-`do-until-key` is a special iteration form. Instead of evaluating a certain condition, it is executed until the Enter key is pressed.
+`do-until-key` is a special iteration form. Instead of evaluating a certain condition, it is executed until the `Enter` key is pressed.
 
 ```
 (do-until-key
@@ -224,7 +224,7 @@ The above is similar to above `dotimes` example.
 
 ### return
 
-`return` is used to exit loops such as `dotimes`,`dolist`,`while`.
+`return` is used to exit loops such as `dotimes`, `dolist` and `while`.
 
 ```
 (dotimes (i 10)
@@ -234,7 +234,7 @@ The above is similar to above `dotimes` example.
 
 ### return-from
 
-`return-from` is used to exit a certain name block, such as ones signaled by a function or method.
+`return-from` is used to exit a block with the given name, such as ones signaled by a function or method.
 Details will be given afterwards.
 
 
@@ -348,7 +348,7 @@ Classes and member functions can be defined as follows.
 ```
 
 In `defclass`, `:super` indicates the parent class, which will be inherited.
-Here the class `propertied-object` is used.
+Here, the class `propertied-object` is used.
 Member variables are signalized by `:slots`.
 
 Member functions are defined with `defmethod`, and have syntax similar to normal functions.
@@ -373,4 +373,4 @@ The above returns `"John Smith"`.
 (send *me* :myname "Alan Smithee")
 ```
 The above replaces the member variable `myname` with `"Alan Smithee"`.
-This way, it is possible to use the same method for `set` and `get`.
+This way, it is possible to use the same method for `set` and `get` purposes.

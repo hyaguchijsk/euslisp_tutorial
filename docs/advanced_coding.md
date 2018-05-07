@@ -3,8 +3,8 @@
 ## Function symbol
 
 It is possible to obtain and execute symbols of previously defined functions.
-Is correspondent to function pointers in C.
-Function symbols can be obtained with `#'`.
+Function symbols can be obtained with `#'`, being correspondent to function pointers in C.
+
 
 
 ## Anonymous function (lambda)
@@ -20,7 +20,7 @@ Regular function definition looks like:
 Anonymous functions can be defined with:
 
 ```
-(lambda (args) (do-something))
+#'(lambda (args) (do-something))
 ```
 
 ## sort
@@ -38,14 +38,14 @@ For example, try to execute the following:
 The first sort uses the function `<`, sorting in crescent order.
 The second sort uses the function `>`, sorting in decreasing order.
 
-Please note that `sort` is destructive, changing the given variable.
+Please note that `sort` is destructive, causing the given variable to be changed.
 
 
 ## mapcar
 
 `mapcar` applies given function symbol to all elements of a list.
 
-In the following example, a lambda function that returns twice the input is given to double the value of all elements from list.
+In the following example, a lambda function that returns twice the input is given to double the value of all elements from the list.
 
 ```
 (mapcar #'(lambda (x) (* 2 x)) (list 0 3 1 2))
@@ -55,7 +55,7 @@ In the following example, a lambda function that returns twice the input is give
 
 ## funcall
 
-`funcall` executes given function symbol.
+`funcall` executes the given function symbol.
 
 The next example shows a function that takes two values and a comparison function symbol `func`. If the result of executing `func` with the two values is non-nil it returns the first, else it returns the second value.
 ```

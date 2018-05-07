@@ -4,13 +4,7 @@ Here we show how to use EusLisp in robot programming.
 This is based on the `samplerobot` provided by `hrpsys_ros_bridge_tutorials`.
 In the case install was performed using `jsk_common`, hrpsys is also installed.
 
-ここでの説明は，
-`hrpsys_ros_bridge`や`jsk_robot`のような
-ロボットモデル，インタフェースの設計方法に則ったロボットであれば
-**すべてのロボットで共通するものです．**
-例えば以下の説明で`samplerobot`や`*sr*`となっている部分を
-それぞれのロボットに置き換えることでそのまま利用することができます．
-
+The explanation here is appliable to **any robot** that follows the robot model and interface base, such as `hrpsys_ros_bridge` and `jsk_robot`. The example below can be used for other robots by replacing the `samplerobot` and `*sr*` parts.
 
 ## Sample robot start-up
 
@@ -24,7 +18,7 @@ roscd hrpsys_ros_bridge_tutorials/euslisp
 ```
 If you are unable to use the above, there is the possibility that the terminal has not been `source`'d or that the install was not done correctly.
 
-Next, run emacs shell with `M-x shell` and run the interpreter loading `smaplerobot-interface.l`.
+Next, run emacs shell with `M-x shell` and run the interpreter loading `samplerobot-interface.l`.
 
 ```bash
 roseus samplerobot-interface.l
@@ -125,7 +119,7 @@ The following shows how to get the angle of a particular joint. The result is in
 (send *sr* :rarm :elbow-p :joint-angle)
 ```
 
-Giving an argument sets the angle to the given value.
+Giving an argument to the above sets the angle to the given value.
 
 ```
 (send *sr* :rarm :elbow-p :joint-angle -30.0)
@@ -161,7 +155,7 @@ And can be temporarily visualized with the following.
 ![samplerobot_endcoords](figure/samplerobot_endcoords.jpg)
 
 Here, the arrow shows the Z axis.
-Below we show how to copy and move this coordinate, making the robot move its hand to the new point.
+Below we show how to copy and move this coordinate, making the robot move its hand to the desired point.
 
 ```
 (setq *larm-end* (send *sr* :larm :end-coords :copy-worldcoords))
@@ -222,7 +216,7 @@ The above makes the robot move to the goal pose in 2000ms.
 
 ![samplerobot_sim_01](figure/samplerobot_sim_01.jpg)
 
-Pose transition is asynchronously, so when synchronization is necessary `:wait-interpolation` is used.
+Pose transition is performed asynchronously, so when synchronization is necessary `:wait-interpolation` is used.
 
 ```
 (send *ri* :wait-interpolation)
@@ -246,7 +240,7 @@ To send the joint angles of the robot to the model, on the other hand, the follo
 Here, `:both` means to match the center of both legs to the given coordinate.
 `:rleg` and `:lleg` can also be used, matching the center of right and left foot, respectively.
 
-With bipedal robots, it is possible to calculate the static balance and move the legs in order to make the center of mass match the center of the 支持多角形.
+With bipedal robots, it is possible to calculate the static balance and move the legs in order to make the center of mass match the center of the support polygon.
 
 ```
 (send *sr* :reset-pose)

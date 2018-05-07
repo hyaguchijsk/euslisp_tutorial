@@ -6,7 +6,7 @@ EusLisp is a Lisp dialect designed for robot programming.
 
 This tutorial is aimed to ones that already have some experience with other programming languages, but are completely new to EusLisp.
 
-Ones that want to learn more about the inner processes or have more detailed explanations should refer to the [original documentation][euslisp-doc].
+Ones that want to learn more about the inner processes or to have more detailed explanations should refer to the [original documentation][euslisp-doc].
 
 For more information on robotic engineering, please refer to an appropriate textbook.
 
@@ -15,7 +15,7 @@ For more information on robotic engineering, please refer to an appropriate text
 
 ### EusLisp main features
 
-- Language specialized in robot programming.
+- Is a language specialized in robot programming.
 - Solid 3D modeling library.
 - Is applicable to any robot supported by ROS and/or OpenHRP.
 
@@ -53,7 +53,7 @@ In order to run the robot model used by this tutorial, the install of [rtmros_co
 sudo apt-get install ros-indigo-hrpsys-ros-bridge ros-indigo-euscollada ros-indigo-pr2eus
 ```
 
-Also download [rtmros_tutorials] into the catkin workspace previously created.
+Finally, download [rtmros_tutorials] into the previously created catkin workspace.
 
 ```bash
 cd <catkin_ws>/src
@@ -81,7 +81,7 @@ catkin bt
 ### Launching the Interpreter
 
 EusLisp is mainly used from the interpreter.
-** With ROS installed, the common is to use "roseus". **
+**With ROS installed, the common is to use "roseus".**
 
 - Minimal usage
 
@@ -104,17 +104,17 @@ roseus
 Since the EusLisp interpreter does not support readline, it is not able to:
 
 - Navigate through the history
-- Use cursor keys.
+- Use cursor keys
 
 In order to avoid this problem, it is recommended to use emacs shell.
-After starting emacs, doing `M-x shell` will launch emacs shell.
+After starting emacs, doing `M-x shell` will launch the shell.
 In emacs shell, the history can be navigated with `M-p`, the cursor keys can be used, results can be accumulated in the buffer, besides many other benefits.
 
 
 ### Using the Interpreter
 
 In EusLisp interpreter,
-** there is no difference between capital and lowercase letters, and the outer parenthesis `()` can be omitted. **
+**there is no difference between capital and lowercase letters, and the outer parenthesis `()` can be omitted**.
 
 For example:
 
@@ -128,7 +128,7 @@ Is equal to:
 + 1 2
 ```
 
-However, is is necessary to use inner parenthesis.
+However, it is necessary to use inner parenthesis.
 
 ```
 + (- 3 2) 1
@@ -142,7 +142,7 @@ Variables can be set with `setq`.
 
 `*` can be used to access the previous result.
 
-For example in the following `*` is substituted with the previous result, that is, `3`.
+For example, in the following `*` is substituted with the previous result, that is, `3`.
 
 ```
 (+ 1 2)
@@ -164,7 +164,7 @@ Session can be finished with `exit` or `Ctrl+D`.
 EusLisp programs conventionally use the extension `.l`.
 Loading one of these files in the interpreter is equivalent to typing all of its contents. No compile is performed when loading, and there is no entry point (main functions).
 
-A file `test.l` can be loaded by starting the interpreter with the file name as arguments
+A file `test.l` can be loaded by starting the interpreter with the file name as argument
 
 ```bash
 roseus test.l
