@@ -1,13 +1,12 @@
 # Modeling
 
-irteus拡張のモデルを作りましょう．
+Let's create a model on irteus expansion.
 
 
-## 形状モデル(bodyset)
+## Geometrical model (bodyset)
 
-`bodyset`は，複数の`body`をひとまとめにできる基底クラスです．
-これを用いると，[geo_coding](geo_coding.md)で記述した物体オブジェクトは
-以下のように書き換えることができます．
+`bodyset` is the lowest class able to gather multiple `body` instances into a single object.
+Using this, the object described at [geo_coding](geo_coding.md) can be rewritten as follows.
 
 ```
 (setq *stick* (make-cylinder 10 100))
@@ -22,45 +21,39 @@ irteus拡張のモデルを作りましょう．
 (objects (list *hammer*))
 ```
 
-## 多リンクモデル(cascaded-link)
+## Multiple link model (cascaded-link)
 
-`cascaded-link`は多リンクモデルを記述する際の基底となります．
-例えば，[robot_coding](robot_coding.md)で出てきた`samplerobot`の場合，
-`(send *sr* :rarm)`で得られるオブジェクトは`cascaded-link`になっています．
+`cascaded-link`is the base for describing a multiple link model.
+In the `samplerobot` example, in [robot_coding](robot_coding.md), objects given by `(send *sr* :rarm)` are of type `cascaded-link`.
 
-`cascaded-link`では，
-`bodyset-link`クラスでリンク情報を，
-`joint`クラスで関節情報を記述します．
-
+`cascaded-link` adds joint angle information from the `joint` class to the link information from `bodyset-link` class.
 
 ### bodyset-link
 
-`bodyset-link`は，`joint`で接続可能なリンク構造を表現できる基底クラスです．
-`bodyset-link`そのものは`bodyset`の子クラスとなっているため，
-作り方は同じです．
+`bodyset-link` is the lowest class able to describe multiple link structures with joints.
+Since it is a child of `bodyset` class, it can be created the same way.
 
 ### joint
 
-`joint`はその名の通り関節を記述する基底クラスです．
-`rotational-joint`,`linear-joint`などがあります．
-`:init`の際に`:parent-link`,`:child-link`を与えることで
-`bodyset-link`をつなぐことができます．
-注意点として，動作の基準となるのは`child-link`の座標系となります．
+`joint` is the lowest class able to represent joints, as the name points out.
+Main types are `rotational-joint` and `linear-joint`.
+During `:init`, it is possible to join links by setting :parent-link` and `:child-link`.
+Please note that the reference is the `child-link` coordinates.
 
-### 多リンクモデルの作り方
+### Creating multiple link models
 
-`cascaded-link`を継承したクラスを作って他リンクモデルを作ります．
+Create a class inheriting `cascaded-link` and model each link.
 
-`:init`の中では以下の手順を踏みます．
+At initialization (`:init`), the following steps are taken.
 
-- `bodyset-link`のオブジェクトを作る．
-- `bodyset-link`をつないだ`joint`のオブジェクトを作る．
-- `self`にルートリンクを，あとは順番に`bodyset-link`同士を`:assoc`でつなぐ．
-- `links`というメンバ変数に`bodyset-link`のオブジェクトのリストを代入する．
-- `joint-list`というメンバ変数に`joint`のオブジェクトのリストを代入する．
-- 最後に`:init-ending`する．
+- create a `bodyset-link` objects
+- create `joint` objects between `bodyset-link` instances
+- `:assoc` links in order, starting from `self` and the root link
+- assign the list of `bodyset-link` objects to the member variable `links`
+- assign the list of `joint` objects to the member variable `joint-list`
+- at last, call `:init-ending`
 
-例として，これまでに作ったハンマーを動かせる一軸のハンドを作ってみましょう．
+For example, let's create a hand that moves the previously created hammer.
 
 ```
 (defclass hammer-hand
@@ -71,7 +64,7 @@ irteus拡張のモデルを作りましょう．
    (&rest args)
    (send-super* :init args)
    (let (hammer-stick hammer-body hammer-stick2 hand-co)
-     ;; bodyset-link をつくる
+     ;; create bodyset-links
      (setq hammer-stick (make-cylinder 10 100))
      (send hammer-stick :set-color :red)
      (setq hammer-body (make-cube 50 100 50))
@@ -82,7 +75,7 @@ irteus拡張のモデルを作りましょう．
            (instance bodyset-link :init (make-cascoords)
                      :bodies (list hammer-stick hammer-body)))
 
-     (setq hammer-stick2 (make-cylinder 20 20))
+     (setq hammer-stinck2 (make-cylinder 20 20))
      (send hammer-stick2 :set-color :green)
      (send hammer-stick2 :rotate (deg2rad 90) :y)
      (send hammer-stick2 :translate (float-vector 0 0 -10))
@@ -90,26 +83,26 @@ irteus拡張のモデルを作りましょう．
            (instance bodyset-link :init (make-cascoords)
                      :bodies (list hammer-stick2)))
 
-     ;; joint をつくる
+     ;; create joints
      (setq j0
            (instance rotational-joint :init
                      :parent-link hand
                      :child-link hammer
                      :axis :x))
 
-     ;; ルートから順番に assoc
+     ;; :assoc from base
      (send self :assoc hand)
      (send hand :assoc hammer)
 
-     ;; links, joint-list は cascaded-link で宣言されている
+     ;; links and joint-list are declared as cascaded-link
      (setq links (list hand hammer))
      (setq joint-list (list j0))
 
-     ;; 忘れずに
+     ;; do not forget!
      (send self :init-ending)
      )
    self)
-  ;; 各関節にアクセスするためのメソッド
+  ;; joint accessor method
   (:hand (&rest args) (forward-message-to j0 args))
   )
 
@@ -120,7 +113,7 @@ irteus拡張のモデルを作りましょう．
 ![modeling_hammerhand_00](figure/modeling_hammerhand_00.jpg)
 
 
-関節角度は以下のように変えることができます．
+Joint angle can be set with the following.
 ```
 (send *hammer-hand* :hand :joint-angle 30)
 ```
@@ -128,20 +121,16 @@ irteus拡張のモデルを作りましょう．
 ![modeling_hammerhand_01](figure/modeling_hammerhand_01.jpg)
 
 
-## ロボットモデル(robot-model)
+## robot-model class
 
-`robot-model`を用いることで，
-他リンクモデルを複数持つロボットを定義することができます．
+Is is possible to define robots with multiple link models using `robot-model` class.
 
+## scene-model class
 
+`scene-model` is the basic class for modeling the surroundings.
+This is done by creating a class that inherits `scene-model` and giving objects models and spots to `:objects`.
 
-## 環境モデル(scene-model)
-
-`scene-model`は環境モデルの基底となるクラスです．
-このクラスを継承し，`:objects`にここまでに作った物体モデルと，
-`cascaded-coords`で立ち位置(spot)を与えることができます．
-
-例えば，以下のように部屋のモデルを作ることができます．
+For example, a room model can be created with the following.
 
 ```
 (defclass myroom-scene
@@ -217,18 +206,17 @@ irteus拡張のモデルを作りましょう．
 ![modeling_myroom_00](figure/modeling_myroom_00.jpg)
 
 
-`scene-model`の最大の利点は，
-環境を構成する各オブジェクトとスポットを名前で指定して呼び出すことができることです．
-この場合だと，
+The greatest benefit of `scene-model` is that it is able to access objects and spots by name.
+In this case:
 
 ```
 (send *myroom* :object "bed")
 ```
 
-とすると，ベッドのオブジェクトが返ってきます．また，
+gives the bed object, and 
 
 ```
 (send *myroom* :spot "bed-spot")
 ```
 
-とすると，ベッド脇のスポットが返ってきます．
+gives the spot near the bed.

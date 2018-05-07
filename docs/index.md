@@ -89,7 +89,7 @@ EusLisp is mainly used from the interpreter.
 eusgl
 ```
 
-- Launch with irteus extension + GUI
+- Launch with irteus expansion + GUI
 
 ```bash
 irteusgl

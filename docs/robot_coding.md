@@ -1,9 +1,8 @@
 # Robot Coding
 
-ここからeuslispを使ったロボットプログラミングに移ります．
-ここでは`hrpsys_ros_bridge_tutorials`の中にある
-`samplerobot`を題材に進めていきます．
-`jsk_common`を用いてインストールした場合，すでにインストールされています．
+Here we show how to use EusLisp in robot programming.
+This is based on the `samplerobot` provided by `hrpsys_ros_bridge_tutorials`.
+In the case install was performed using `jsk_common`, hrpsys is also installed.
 
 ここでの説明は，
 `hrpsys_ros_bridge`や`jsk_robot`のような
@@ -13,131 +12,120 @@
 それぞれのロボットに置き換えることでそのまま利用することができます．
 
 
-## サンプルロボットの起動
+## Sample robot start-up
 
+First, launch roscore.
 ```bash
 roscore
 ```
-として，あらかじめroscoreを上げておきましょう．
-
-別のターミナルに移り，
+Then, in a different terminal move to the proper directory.
 ```bash
 roscd hrpsys_ros_bridge_tutorials/euslisp
 ```
-で，目的のディレクトリに移動できます．
-移動できない場合はインストールが不完全なので，やり直してください．
+If you are unable to use the above, there is the possibility that the terminal has not been `source`'d or that the install was not done correctly.
 
-```bash
-emacs -nw
-```
-として，emacsを立ち上げ，`M-x shell`でemacs shellを起動します．
+Next, run emacs shell with `M-x shell` and run the interpreter loading `smaplerobot-interface.l`.
 
 ```bash
 roseus samplerobot-interface.l
 ```
 
-として，プロンプトが返ってくれば準備完了です．
+When the prompt returns, doing the following completes the preparation. 
+
 ```
 (samplerobot-init)
 ```
-してください．
-しばらくすると，シミュレータのビューワが立ち上がります．
+After a few seconds, the simulator should be launched.
 
 ![samplerobot_sim_00](figure/samplerobot_sim_00.jpg)
 
-このシミュレータはeuslispのものではない事に注意してください．
-もし実機を使う場合やgazeboのような別のシミュレータを使う場合，
-この画面は表示されません．
+This simulator is not a part of EusLisp.
+When using the real robot or a different kind of simulator like gazebo, this window does not show up.
 
-ここで，ロボットのオブジェクトは`*sr*`に，
-`*ri*`にはロボットのインタフェースが確保されています．
+Here, the robot object and the robot interface are bound to the global variables `*sr*` and `*ri*`, respectively.
 
+
+Executing `objects` launches the `irtviewer`, showing EusLisp robot model.
 ```
 (objects (list *sr*))
 ```
-とすると`irtviewer`が立ち上がり，euslispのロボットモデルが表示されます．
-`irtviewer`はタイトルがIRT Viewerで，
-背景にグリッドがないことで見分けてください．
+Both windows can be distinguished by the title and grid.
 
 ![samplerobot_irtviewer_00](figure/samplerobot_irtviewer_00.jpg)
 
 
-## ロボットモデルを用いたプログラミング
+## Programming using the robot model
 
-### 定形ポーズ
+### Predefined poses
 
-各ロボットにはいくつかの定形ポーズがあります．
+Each robot has a set of predefined poses.
+
+For instance, the following manipulation pose.
 
 ```
 (send *sr* :reset-manip-pose)
 ```
 
-とすると，両腕での作業に適したポーズを取ります．
-
 ![samplerobot_reset_manip_pose](figure/samplerobot_reset_manip_pose.jpg)
 
+Or the default pose:
 
 ```
 (send *sr* :reset-pose)
 ```
 
-は初期姿勢に戻ります．
 
+### Access to each limb
 
-### 各リムへのアクセス
-
-例として，ロボットの右腕へは以下のようにアクセスできます．
+For example, to access the right arm:
 
 ```
 (send *sr* :rarm)
 ```
 
-以下のように，リンクのリストが返ってきます．
+This returns a list of all links in the right arm:
 
 ```
 (#<bodyset-link #X7344798 RARM_LINK1  0.0 -210.0 1249.5 / 0.0 0.524 0.0> #<bodyset-link #X73367b0 RARM_LINK2  0.0 -210.0 1249.5 / 0.0 0.524 0.0> #<bodyset-link #X7309358 RARM_LINK3  -131.5 -210.0 1021.735 / 0.0 0.524 0.0> #<bodyset-link #X72ed1b8 RARM_LINK4  -131.5 -210.0 1021.735 / 0.0 -1.222 0.0> #<bodyset-link #X72b9da8 RARM_LINK5  100.604 -210.0 937.256 / 0.434 -1.189 -0.406> #<bodyset-link #X72a27e0 RARM_LINK6  100.604 -210.0 937.256 / 0.596 -1.29 -0.559> #<bodyset-link #X7253560 RARM_LINK7  100.604 -210.0 937.256 / 0.596 -1.29 0.078>)
 ```
 
-その他の各リムへは以下のようにアクセスできます．
+For other limbs:
 
 ```
-(send *sr* :head)  ;; samplerobotにはない
+(send *sr* :head)  ;; samplerobot does not have any head links
 (send *sr* :larm)
 (send *sr* :body)
 (send *sr* :rleg)
 (send *sr* :lleg)
 ```
 
-当然，ロボットによって存在しないリムは`nil`を返します．
-例えば車輪移動型ロボットでは左右の足は存在しません．
+Obviously, each robot does not necessarily have all of the above limbs. For instance, robots with mobile platforms do not have legs.
 
-各リムがどのような関節を持っているかは，以下のように取得できます．
+
+Joints of each limb can be listed like in the following.
 
 ```
 (send *sr* :rarm :joint-list)
+
+;; (#<rotational-joint #X70a3cd8 RARM_SHOULDER_P> #<rotational-joint #X76107a0 RARM_SHOULDER_R> #<rotational-joint #X7610668 RARM_SHOULDER_Y> #<rotational-joint #X76105a8 RARM_ELBOW> #<rotational-joint #X7610470 RARM_WRIST_Y> #<rotational-joint #X76103b0 RARM_WRIST_P> #<rotational-joint #X7610278 RARM_WRIST_R>)
 ```
 
-この返り値は関節のリストになります．
+Each joint can be directly accessed by its real name or by EusLisp nickname. In this case, nicknames are given by replacing `_` with `-` in each name. All of the forms below are equivalent.
 
 ```
-(#<rotational-joint #X70a3cd8 RARM_SHOULDER_P> #<rotational-joint #X76107a0 RARM_SHOULDER_R> #<rotational-joint #X7610668 RARM_SHOULDER_Y> #<rotational-joint #X76105a8 RARM_ELBOW> #<rotational-joint #X7610470 RARM_WRIST_Y> #<rotational-joint #X76103b0 RARM_WRIST_P> #<rotational-joint #X7610278 RARM_WRIST_R>)
+(send *sr* :rarm_shoulder_p)
+(send *sr* :rarm-shoulder-p)
+(send *sr* :rarm :shoulder-p)
 ```
 
-euslispからアクセスするときの名前は
-各関節の名前からリム名を除き，`_`を`-`に換えたものになります．
+### Forward Kinematics
 
-
-### 順運動学
-
-関節角度を直接変更します．
-例えば右腕の肘の関節角度は次のように取得します．
-
+The following shows how to get the angle of a particular joint. The result is in degrees.
 ```
 (send *sr* :rarm :elbow-p :joint-angle)
 ```
 
-関節角度は度で表されます．
-これを変更するためには，変更後の値を引数として与えます．
+Giving an argument sets the angle to the given value.
 
 ```
 (send *sr* :rarm :elbow-p :joint-angle -30.0)
@@ -146,7 +134,7 @@ euslispからアクセスするときの名前は
 ![samplerobot_fk_00](figure/samplerobot_fk_00.jpg)
 
 
-このように順々に関節角度を変更することで任意の姿勢を取らせることができます．
+Arbitrary poses can be created by setting joint angles this way.
 
 ```
 (send *sr* :rarm :shoulder-r :joint-angle -30.0)
@@ -155,17 +143,16 @@ euslispからアクセスするときの名前は
 ![samplerobot_fk_00](figure/samplerobot_fk_01.jpg)
 
 
-### 逆運動学
+### Inverse Kinematics
 
-続いて逆運動学を解かせます．
-逆運動学の基準となる座標は`end-coords`で取得できます．
+Next we will solve the Inverse Kinematics (IK).
+The base coordinates for the IK are given by `:end-coords` method.
 
 ```
 (send *sr* :larm :end-coords)
 ```
 
-とすることで，左手の基準座標を取得できます．
-ビューワに一時的に座標を表示するためには，以下のようにします．
+And can be temporarily visualized with the following.
 
 ```
 (send *sr* :larm :end-coords :draw-on :size 100.0 :flush t)
@@ -173,8 +160,8 @@ euslispからアクセスするときの名前は
 
 ![samplerobot_endcoords](figure/samplerobot_endcoords.jpg)
 
-このとき，矢印が向いている方向がZ軸になります．
-この座標系をコピーして移動させ，その位置に手を伸ばさせます．
+Here, the arrow shows the Z axis.
+Below we show how to copy and move this coordinate, making the robot move its hand to the new point.
 
 ```
 (setq *larm-end* (send *sr* :larm :end-coords :copy-worldcoords))
@@ -184,30 +171,27 @@ euslispからアクセスするときの名前は
 
 ![samplerobot_ik_00](figure/samplerobot_ik_00.jpg)
 
-この例では，基準座標が目標座標と完全に一致するように逆運動学を解きます．
-一方で，例えばペットボトルのような円柱をつかむときには
-Z軸周りの回転は任意でよい，ということも考えられます．
-この場合，`:rotation-axis`というキーワード引数を使います．
-`t`がデフォルトで全軸を完全に一致させます．
-`:z`の場合Z軸周りは任意になります．
-`nil`を渡すと回転は無視されます．
+This time, the IK was solved in order to completely match the base coordinate with the goal coordinate, both in position and attitude.
+However, when thinking on grasping a cylindrical object like a pet bottle, for instance, arbitrary rotation on the Z axis is tolerated.
+We indicate such cases by using the keyword `:rotation-axis`:
+- `t` is the default value, meaning complete match.
+- `:z` means arbitrary rotation on the Z axis.
+- `nil` means to ignore rotation, matching only the position.
 
 ```
 (send *larm-end* :translate (float-vector 100.0 0.0 50.0))
 (send *sr* :larm :inverse-kinematics *larm-end* :rotation-axis :z)
 ```
 
-また，`:move-end-pos`を使って簡単に平行移動させることができます．
-この時与えるベクトルは`end-coords`基準であることに注意してください．
+`:move-end-pos` can also be used for displacing the position in a simple way.
+Here, a vector relative to the `end-coords` is given as argument.
 
 ```
 (send *sr* :larm :move-end-pos (float-vector 0 0 100))
 ```
 
-上の三つの例は，腕だけを動かす例です．
-上半身をあわせて使うことで可動域を広げることができます．
-上半身を使うためには，`:torso t`とする他に
-`:link-list`に計算に使うリンクをすべて渡す必要があります．
+The three examples above move only the arm, but it is also possible to use the upper body as well, amplifying the reachability.
+In order to do so, it is necessary to use `:torso t` and set `:link-list` to the list of all links to be used in the calculation.
 
 ```
 (send *sr* :reset-manip-pose)
@@ -224,49 +208,45 @@ Z軸周りの回転は任意でよい，ということも考えられます．
 ![samplerobot_ik_01](figure/samplerobot_ik_01.jpg)
 
 
-## ロボットとの通信
+## Communication with the robot
 
-ロボットと通信するためには，`*ri*`を使います．
-これは実機の場合には実機と，シミュレータの場合はシミュレータと接続されます．
+The robot interface `*ri*` is used to perform communication with the robot (real robot or simulator).
 
-関節角度をロボットに同期させるためには以下のようにします．
+The following synchronizes the joint angles of the robot with the ones of the model.
 
 ```
 (send *ri* :angle-vector (send *sr* :angle-vector) 2000)
 ```
 
-このようにすると，ロボットは2000ms後に目標姿勢に移動します．
+The above makes the robot move to the goal pose in 2000ms.
 
 ![samplerobot_sim_01](figure/samplerobot_sim_01.jpg)
 
-姿勢移動は非同期的に行われるため，
-移動が終わるのを同期したい場合は以下のようにします．
+Pose transition is asynchronously, so when synchronization is necessary `:wait-interpolation` is used.
 
 ```
 (send *ri* :wait-interpolation)
 ```
 
-また，ロボットの姿勢をモデル側に取得するためには
-以下のようにします．
+To send the joint angles of the robot to the model, on the other hand, the following is used.
 
 ```
 (send *ri* :state)
 (send *sr* :angle-vector (send *ri* :potentio-vector))
 ```
 
-## 足の使い方
+## Using the legs
 
-ロボットを特定のスポットに移動するには，`:fix-leg-to-coords`を使います．
+`:fix-leg-to-coords` is used to make the robot move to a certain spot.
 
 ```
 (send *sr* :fix-leg-to-coords (make-coords) :both)
 ```
 
-ここで最後の`:both`は両足の中心を所定の座標に移動するという意味で．
-`:rleg`, `:lleg`を指定するとそれぞれの足の中心が基準となります．
+Here, `:both` means to match the center of both legs to the given coordinate.
+`:rleg` and `:lleg` can also be used, matching the center of right and left foot, respectively.
 
-二足歩行ロボットの場合，静的にバランスを計算し，
-重心が支持多角形の中心に来るように足を動かすことができます．
+With bipedal robots, it is possible to calculate the static balance and move the legs in order to make the center of mass match the center of the 支持多角形.
 
 ```
 (send *sr* :reset-pose)
@@ -278,6 +258,5 @@ Z軸周りの回転は任意でよい，ということも考えられます．
 
 ![samplerobot_foot_00](figure/samplerobot_foot_00.jpg)
 
-この例では，左足の上に重心が来るように，左足を動かしています．
-`:move-centroid-on-foot`の第一引数はどの足の上に重心を動かすかを指定し，
-第二引数はどの足を動かすかをリストで与えます．
+The above shows how to move the center of mass into the left leg.
+First argument of `:move-centroid-on-foot` indicates on which leg the center of mass should be moved into, and the second argument indicates which legs should be moved.
