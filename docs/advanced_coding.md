@@ -1,36 +1,33 @@
 # Advanced Coding
 
-## 関数シンボル
+## Function symbol
 
-すでに定義されている関数のシンボルを取得し，実行することができます．
-C言語で言うところの関数ポインタに当たります．
-関数シンボルは`#'`で取得することができます．
+It is possible to obtain and execute symbols of previously defined functions.
+Function symbols can be obtained with `#'`, being correspondent to function pointers in C.
 
 
-## 無名関数(lambda)
 
-関数シンボルと組み合わせることで，
-その場で関数の内容を定義して渡すことができます．
+## Anonymous function (lambda)
 
-通常の関数定義は以下のようになりますが，
+Using the function symbol, it is possible to create and apply functions at the same time.
+
+Regular function definition looks like:
 
 ```
 (defun funcname (args) (do-something))
 ```
 
-無名関数の定義は以下のようになります．
+Anonymous functions can be defined with:
 
 ```
-(lambda (args) (do-something))
+#'(lambda (args) (do-something))
 ```
 
 ## sort
 
-関数シンボルを用いる例として，`sort`があります．
-その名の通りソートを行う関数ですが，
-比較評価のための関数シンボルを受け取り昇順，降順などを決めることができます．
+`sort` is a function that sorts a list according to an evaluation function, which is given using the function symbol.
 
-例えば，以下の例を実行してみてください．
+For example, try to execute the following:
 
 ```
 (setq *ls* (list 0 3 1 2))
@@ -38,18 +35,17 @@ C言語で言うところの関数ポインタに当たります．
 (print (sort *ls* #'>))
 ```
 
-最初のソートは，`<`の関数シンボルを与えていて，リストは昇順に並びます．
-次のソートは`>`の関数シンボルを与えていて，リストは降順に並びます．
+The first sort uses the function `<`, sorting in crescent order.
+The second sort uses the function `>`, sorting in decreasing order.
 
-`sort`は破壊的メソッドなので中身が書き換わることに注意してください．
+Please note that `sort` is destructive, causing the given variable to be changed.
 
 
 ## mapcar
 
-`mapcar`は関数シンボルを用いてリストに対して処理を行うことができます．
-渡された関数シンボルの内容をリストの各要素に適用していきます．
+`mapcar` applies given function symbol to all elements of a list.
 
-以下の例では，無名関数で与えられた値を二倍するようにし，リストの要素をすべて二倍にします．
+In the following example, a lambda function that returns twice the input is given to double the value of all elements from the list.
 
 ```
 (mapcar #'(lambda (x) (* 2 x)) (list 0 3 1 2))
@@ -59,15 +55,14 @@ C言語で言うところの関数ポインタに当たります．
 
 ## funcall
 
-関数シンボルを実行するには`funcall`を使います．
+`funcall` executes the given function symbol.
 
+The next example shows a function that takes two values and a comparison function symbol `func`. If the result of executing `func` with the two values is non-nil it returns the first, else it returns the second value.
 ```
 (defun numcheck (a b func) (if (funcall func a b) a b))
 ```
 
-この例では，与えられた２つの値を比較する関数シンボル`func`を受け取り，
-その値が真になれば`a`，偽になれば`b`を返すようにしています．
-次の実行結果を確認してみてください．
+Try out and check the following results.
 
 ```
 (numcheck 0 1 #'<)  ;; 0

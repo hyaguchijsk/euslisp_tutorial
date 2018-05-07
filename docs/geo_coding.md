@@ -1,185 +1,159 @@
 # Geometric Coding
 
-euslispには幾何学計算ライブラリが豊富に含まれています．
-roseusを含むirteusgl以降の拡張で使えるものについて解説します．
+EusLisp have a solid library for geometric calculation.
+The explanation below is for irteusgl and afterwards (including roseus).
 
 
-## 3Dビューワ
+## 3D Viewer
 
+3D Viewer can be launched with
 ```
 (make-irtviewer)
 ```
 
-とすると，次のような3Dビューワが立ち上がります．
-
 ![geo_irtviewer](figure/geo_irtviewer.jpg)
 
-このビューワには`*irtviewer*`という変数でアクセスすることができます．
-また中心付近をドラッグすることで視点の角度を，
-左側，下側をドラッグすることで視点の位置を，
-上側，右側をドラッグすることで拡大縮小をそれぞれ変更できます．
-通常の3Dソフトに比べて独特なので注意してください．
+This viewer can be accessed by the global variable `*irtviewer*`.
+The view angle can be changed by dragging around the center.
+The left and bottom sides are used to adjust the view point.
+The right and top sides are used to zoom in and out.
+It differs from most 3D software, so please be aware of the above.
 
-ループを用いたプログラミングの際に必要となることとして，
-描画の更新とイベントの処理があります．
-描画の更新には，次のようにしてください．
+The viewer can be updated by clicking it or using `:draw-objects`, which is particularly necessary for loop animations. Updating the objects usually do not cause the viewer to get updated.
 
 ```
 (send *irtviewer* :draw-objects)
 ```
 
-基本的に物体の情報を更新しただけでは描画は更新されないため，
-クリックするか上のコマンドを使って更新します．
-また，ループ中にもクリックやドラッグといったイベントを処理するためには，
-次のようにしてください．
+The following is used to allow mouse interruption during loop animation.
 
 ```
 (x::window-main-one)
 ```
 
 
-## 基本立体
+## Basic solids
 
+The following create a cube with border 100 mm
 ```
 (setq *cube* (make-cube 100 100 100))
 ```
 
-とすると，一辺が100(単位はmm)の立方体が生成されます．
-これをビューワに出すためには，
+which is send to the viewer by
 ```
 (objects (list *cube*))
 ```
-としてください．
 
 ![geo_cube_00](figure/geo_cube_00.jpg)
 
 
-色を変えるためには，
+Color can be changed with `:set-color`.
 ```
 (send *cube* :set-color :red)
 ```
-とします．
+
+The following change the cube's position and pose.
 
 ```
 (send *cube* :translate (float-vector 0 0 50))
 (send *cube* :rotate (/ pi 4.0) :z)
 ```
-とするとことで，平行移動，回転を行わせることができます．
-ここで，`float-vector`はベクトルを作るための関数です．
-ベクトルはリストではなく，同じ型の値しか内部に持つことができません．
+`float-vector` is a function to create a vector.
+Differently from lists, vectors can only store elements of the same type.
 
-ここまでの変更を加えると，次のようになります．
-(表示を更新するにはビューワをクリックするか
-`send *irtviewer* :draw-objects`してください．)
+When the viewer is clicked or `draw-objects` gets called, the viewer is updated.
 
 ![geo_cube_01](figure/geo_cube_01.jpg)
 
 
-同様に，`make-cylinder`,`make-cone`などを作成することができます．
-もっと詳しく知りたい場合は，
-[基本bodyの作成関数]を参照してください．
+Similarly, `make-cylinder`, `make-cone` and other functions are provided.
+Details are given in [Basic body functions (Japanese)].
 
-[基本bodyの作成関数]: http://euslisp.github.io/jskeus/jmanual-node118.html
+[Basic body functions (Japanese)]: http://euslisp.github.io/jskeus/jmanual-node118.html
 
 
-## ベクトル演算
+## Vector operations
 
-単なるベクトルの計算をしたい時は，`v+`,`v-`,`v.`,`v*`を使います．
+Simple operations can be performed with `v+`, `v-`, `v.` and `v*`. For summing more than two vectors, `v++` is used.
 
 ```
 (setq *v0* (float-vector 1 2 3)
       *v1* (float-vector 4 5 6))
 (print (v+ *v0* *v1*))
 (print (v- *v0* *v1*))
-(print (v. *v0* *v1*))  ;; 内積
-(print (v* *v0* *v1*))  ;; 外積
+(print (v. *v0* *v1*))  ;; Inner product
+(print (v* *v0* *v1*))  ;; Outer product
 ```
 
-定数倍を行いたい場合，
-`scale`を用います．
+`scale` is used to multiply by a scalar.
 ```
 (scale 10.0 *v0*)
 ```
 
-また，ベクトルの要素には`elt`を使ってアクセスできますが，
-`car`などリストだけで使える方法は使えません．
+Vector elements can be accessed with `elt`. List operations such as `nth` and `car` cannot be used.
 
-`float-vector`を使って作られたベクトルオブジェクトは`#f()`
-となっています．
-例えば，`#f(0 0 0)`などとすると即値でアクセスすることができますが，
-**`#f()`でアクセスした場合，その中を書き換えてはいけない**
-ことに注意してください．
+Objects created with `float-vector` are represented with `#f()`, which can also be used to access immediate values. However, **it is not recommended to change elements of vectors created with `#f()`**.
 
 
-## 座標系
+## Coordinate system
 
-続けて，
+Next, try this:
 ```
 (send *cube* :coords)
 ```
-としてみてください．
-例えば，
+It should return something like the following object.
 ```
 #<coordinates #X6890ff8  0.0 0.0 50.0 / 0.785 0.0 0.0>
 ```
-のようなオブジェクトが返ってきます．
-これは`coordinate`というオブジェクトになっており，
-同次座標変換を行うことのできるオブジェクトです．
-先ほど立方体を動かしたメソッドは，
-この`coordinate`に対する処理を行なっています．
 
-座標系はオブジェクトなので，
-コピーしたものを使いたい場合は
+This is a `coordinate` object, which can be transformed by homogeneous coordinate transformations like the above `:translate` and `:rotate`.
+
+To copy such objects, `:copy-coords` is used.
 ```
 (send *cube* :copy-coords)
 ```
-とするとコピーが作れます．
 
+To make new coordinates, `make-coords` is used.
 ```
 (setq *co* (make-coords))
 ```
-とすると，新しい座標を作ることができます．
 
-座標の平行移動は
+Translation is made with `:translate`.
 ```
 (send *co* :translate (float-vector 10 20 30))
 ```
-として行うことができます．
 
-座標の回転移動は複数のやり方がありますが，
-最も簡単には軸を指定して回転させます．
+The easiest way to change the coordinate attitude is to `:rotate` around an axis.
 ```
 (send *co* :rotate (/ pi 4.0) :z)
 ```
-とすると，z軸周りに4/PI(単位はラジアンなので，45度)回転することができます．
-(`deg2rad`もしくは`rad2deg`をつかうとラジアンと度を相互変換できます．)
+The above rotates 4/PI rad (45 deg) around the z axis.
+(`deg2rad` and `rad2deg` can be used for conversion between radian and degree)
 
-また，ビューワ上で座標を見ることができます．
+It is also possible to visualize coordinates.
 ```
 (objects (list *cube* *co*))
 ```
-としてみてください．
 
 ![geo_cube_02](figure/geo_cube_02.jpg)
 
 
-### 座標系を用いたベクトルの変換
+### Vector transformations using coordinates
 
-座標系を用いて同次座標変換を行うことができます．
-
+It is possible to transform a vector into a certain coordinate system with the following:
 ```
 (setq *vec* (float-vector 100 0 50))
 (send *co* :transform-vector *vec*)
 ```
-とすると，`*co*`で`*vec*`を変換したベクトルが返ってきます．
+Here, the result is the vector equivalent to `*vec*` with origin in `*co*`.
 ```
 #f(80.7107 90.7107 80.0)
 ```
 
 
-### 座標系を用いた座標系動詞の変換
+### Coordinate transformations using other coordinates
 
-例えば，次のように入力してください．
+For example:
 
 ```
 (setq *co2* (make-coords))
@@ -187,52 +161,49 @@ roseusを含むirteusgl以降の拡張で使えるものについて解説しま
 (send *co2* :rotate pi :x)
 (send *co* :transform *co2*)
 ```
-返り値は，`*co*`を`*co2*`で変換したものになります．
-`*co*`の値そのものが変化します．
+The result is the coordinate equivalent to `*co2*` with origin in `*co*`.
+This value is also stored in `*co*`.
 ```
 #<coordinates #X68a8e38  80.711 90.711 30.0 / 0.785 6.163e-33 3.142>
 ```
 
 
-## 連結座標系
+## Linked coordinate systems
 
-これまでは単一の座標系を用いていましたが，
-`cascaded-coords`を用いると，連結された座標系を表現できます．
-つまり，親となる座標が動いた場合，子も一緒に動きます．
-`make-coords`の代わりに，`make-cascoords`を使います．
+Until now we only dealt with single coordinate systems.
+By using `cascaded-coords`, it is possible to express linked coordinate systems.
+That is, when the parent coordinate is moved, child coordinate systems move the same way.
+Instead of `make-coords`, `make-cascoords` is used.
 
 ```
 (setq *casco* (make-cascoords))
 (setq *casco2* (make-cascoords :pos (float-vector 100 0 0) :parent *casco*))
 ```
-とすると，`*casco*`と`*casoco2*`は連結されます．
-このように作成時に連結する他にも，
-`:assoc`というメソッドも使えます．
+In the above, `*casco*` and `*casoco2*` are created and linked.
+It is also possible to link already created coordinates with `:assoc`.
 
+In the following, translating the parent `*casco*` also causes `casco2*` to be moved the same way.
 ```
 (send *casco* :translate (float-vector 0 0 100))
-;; 返り値は #<cascaded-coords #X690b528  0.0 0.0 100.0 / 0.0 0.0 0.0>
-```
-とすると，`*casco2*`も一緒に動きます．
-```
+;; #<cascaded-coords #X690b528  0.0 0.0 100.0 / 0.0 0.0 0.0>
 *casco2*
-;; とすると #<cascaded-coords #X6a0ece8  100.0 0.0 100.0 / 0.0 0.0 0.0>
+;; #<cascaded-coords #X6a0ece8  100.0 0.0 100.0 / 0.0 0.0 0.0>
 ```
 
-ではためしに次のようにしてみましょう．
+Instead, try to move the child coordinate:
 ```
 (send *casco2* :translate (float-vector 0 100 0))
 ;; #<cascaded-coords #X6a0ece8  100.0 100.0 100.0 / 0.0 0.0 0.0>
 ```
-`*casco*`は動きません．
+In this case, `*casco*` does not move.
 ```
 *casco*
 ;; #<cascaded-coords #X690b528  0.0 0.0 100.0 / 0.0 0.0 0.0>
 ```
 
-## 立体の連結
+## Linking bodies
 
-では，次のようなことをしたらどうなるでしょうか，
+Bodies can be linked with `:assoc`, similarly to coordinates.
 
 ```
 (setq *stick* (make-cylinder 10 100))
@@ -246,37 +217,30 @@ roseusを含むirteusgl以降の拡張で使えるものについて解説しま
 
 ![geo_hammer_00](figure/geo_hammer_00.jpg)
 
-二つの物体が表示されます．
-この状態で`*stick*`を動かしてみると，
+Both objects are displayed.
+If we try to move `*stick*`, both objects get moved.
 ```
 (send *stick* :translate (float-vector 0 0 100))
-(send *irtviewer* :draw-objects)  ;; 表示の更新
+(send *irtviewer* :draw-objects)  ;; Update viewer
 ```
 
 ![geo_hammer_01](figure/geo_hammer_01.jpg)
 
-二つの立体が一緒に移動します．立体同士も連結することができました．
 
-
-一方，この状態だと，
+However, the coordinates of `*body*` seem to be unchanged:
 ```
 (send *body* :coords)
 ;; #<coordinates #X6b3d9f8  0.0 0.0 100.0 / 0.0 0.0 0.0>
 ```
-となり，最初に作った時のままです．
-いま`*body*`は`#f(0 0 200)`の位置にいるはずなので，
-これは局所座標系の値ではないかと推測されます．
-世界座標系で連結を考慮した座標系を取ってくるには，
+This is because `:coords` returns the coordinates relative to the parent, which remain unaltered. To get the global coordinates, `:worldcoords` is used.
 ```
 (send *body* :worldcoords)
 ;; #<coordinates #X6a93e88  0.0 0.0 200.0 / 0.0 0.0 0.0>
 ```
-とします．
 
-コピーを取ってくる場合は，
+Global coordinates can be copied with `:copy-worldcoords`.
 ```
 (send *body* :copy-worldcoords)
 ```
-となります．
 
 

@@ -2,40 +2,33 @@
 
 ## About
 
-EusLispは，
-ロボットプログラミングのための様々な機能を持ったLispライク処理系です．
+EusLisp is a Lisp dialect designed for robot programming.
 
-このチュートリアルは，
-他の言語ではある程度経験があるが，
-EusLispについては全くの初心者に向けて記述しています．
+This tutorial is aimed to ones that already have some experience with other programming languages, but are completely new to EusLisp.
 
-言語仕様や一歩進んだ使い方について，より詳しく知りたい時は，
-[本家のドキュメント][euslisp-doc]を参照してください．
+Ones that want to learn more about the inner processes or to have more detailed explanations should refer to the [original documentation][euslisp-doc].
 
-ロボット工学に関する知識はロボット工学の教科書を参照してください．
+For more information on robotic engineering, please refer to an appropriate textbook.
 
 [euslisp-doc]: http://euslisp-docs.readthedocs.org/en/latest/
 
 
-### EusLispの特徴
+### EusLisp main features
 
-- ロボットプログラミングに特化した開発環境です．
-- その根底には充実した三次元幾何ライブラリがあります．
-- OpenHRP,ROSとのブリッジを持ち，それらに対応した多数のロボットが動かせます．
-
+- Is a language specialized in robot programming.
+- Solid 3D modeling library.
+- Is applicable to any robot supported by ROS and/or OpenHRP.
 
 ## Install
 
-ROSがインストールされていることが前提となります．
-[ROS/Installation]を参考にインストールしてください．
-また，[wstool],[catkin-tools]もあわせてインストールすると便利です．
+To install ROS, please follow instructions on the following link: [ROS/Installation].
+It is recommended to also install [wstool] and [catkin-tools].
 
 ```bash
 sudo apt-get install python-wstool python-catkin-tools
 ```
 
-インストール終了後，catkinのワークスペースを作ってください．
-例えば以下のようにします．
+When finished with installation, create a catkin workspace like in the following.
 
 ```bash
 mkdir ~/catkin_ws
@@ -46,23 +39,22 @@ catkin build
 source ~/catkin_ws/devel/setup.bash
 ```
 
-### ROSをインストールしてあり，手動でインストールする場合
+### Manual installation from ROS
 
-`ros-<ROS_DISTRO>-roseus`というパッケージが提供されています．
-indigoの場合，以下のようにインストールできます．
+Packages like `ros-<ROS_DISTRO>-roseus` are provided. For instance, in indigo EusLisp can be installed as follows.
 
 ```bash
 sudo apt-get install ros-indigo-roseus
 ```
 
-また，本チュートリアルで紹介するロボットモデルを利用するためには，
-[rtmros_common]のインストールを行なってください．
+In order to run the robot model used by this tutorial, the install of [rtmros_common] is also necessary.
 
 ```bash
 sudo apt-get install ros-indigo-hrpsys-ros-bridge ros-indigo-euscollada ros-indigo-pr2eus
 ```
 
-および，catkinのワークスペースに[rtmros_tutorials]をダウンロードしてください．
+Finally, download [rtmros_tutorials] into the previously created catkin workspace.
+
 ```bash
 cd <catkin_ws>/src
 wstool set rtm-ros-robotics/rtmros_tutorials https://github.com/start-jsk/rtmros_tutorials.git --git
@@ -77,123 +69,109 @@ catkin bt
 [rtmros_tutorials]: https://github.com/start-jsk/rtmros_tutorials
 
 
-### インストーラを利用して最初からインストールする場合
+### Installer for ROS, HRPSYS and EusLisp
 
-[jsk_common]を利用することで，
-ros, hrpsys, euslispを含む
-様々なロボットプログラミングツールをインストールできます．
+[jsk_common] makes possible to install a variety of tools for robot programming, including ROS, hrpsys and EusLisp.
 
 [jsk_common]: https://github.com/jsk-ros-pkg/jsk_common
 
 
 ## Basic Usage
 
-### インタプリタ起動
+### Launching the Interpreter
 
-euslispはインタプリタを用いて動作させることが基本です．
-** rosをインストールした環境であれば，通常はroseusを使いましょう． **
+EusLisp is mainly used from the interpreter.
+**With ROS installed, the common is to use "roseus".**
 
-- 最低限の機能を起動
+- Minimal usage
 
 ```bash
 eusgl
 ```
 
-- irteus拡張 + GUIを読み込んで起動
+- Launch with irteus expansion + GUI
 
 ```bash
 irteusgl
 ```
 
-- irteusgl + rosインタフェースを読み込んで起動
+- Launch with irteusgl + ROS interface
 
 ```bash
 roseus
 ```
 
-euslispのインタプリタはreadlineに対応していないため
+Since the EusLisp interpreter does not support readline, it is not able to:
 
-- 履歴をたどることができない
-- カーソルキーが使えない
+- Navigate through the history
+- Use cursor keys
 
-という問題点があります．
-これらを解決するため，emacs shellの利用を推奨しています．
-emacsを起動し，`M-x shell`とすると，emacs shellが利用できます．
-emacs shellの上では，`M-p`で履歴をたどれるほか，
-カーソルキーで移動できる，
-バッファに実行結果をためておけるなど，多数の利点があります．
+In order to avoid this problem, it is recommended to use emacs shell.
+After starting emacs, doing `M-x shell` will launch the shell.
+In emacs shell, the history can be navigated with `M-p`, the cursor keys can be used, results can be accumulated in the buffer, besides many other benefits.
 
 
-### インタプリタの使い方
+### Using the Interpreter
 
-euslispインタプリタは
-** 大小文字の区別なし，一番外側の`()`はなくても良い **
-という仕様になっています．
+In EusLisp interpreter,
+**there is no difference between capital and lowercase letters, and the outer parenthesis `()` can be omitted**.
 
-例えば
+For example:
 
 ```
 (+ 1 2)
 ```
 
-と
+Is equal to:
 
 ```
 + 1 2
 ```
 
-は同じです．ただし，入れ子になる場合は`()`を書きましょう．
+However, it is necessary to use inner parenthesis.
 
 ```
 + (- 3 2) 1
 ```
 
-また，変数への代入は`setq`を使います．
+Variables can be set with `setq`.
 
 ```
 (setq a (+ 1 2))
 ```
 
-前回の実行結果を参照するには`*`を使いましょう．
+`*` can be used to access the previous result.
+
+For example, in the following `*` is substituted with the previous result, that is, `3`.
 
 ```
 (+ 1 2)
-```
-
-としたあとに，
-
-```
 (setq a *)
 ```
 
-とすると，前回実行結果の`3`が代入されます．
-同様に`**`で前々回，`***`で前々々回の結果を参照できます．
+`**` and `***` work similarly, accessing the 2nd last result and 3rd last result.
 
 
-終了方法は`exit`です．
+Session can be finished with `exit` or `Ctrl+D`.
 
 ```
 (exit)
 ```
 
 
-### プログラムの書き方
+### Writing programs
 
-プログラムは拡張子`.l`のファイルに記述していきます．
-euslispはインタプリタに読ませるスクリプトとしてこのファイルを解釈します．
-コンパイルやエントリーポイント(いわゆる`main`関数)はなく，
-ファイルの中身をそのままインタプリタ上でタイプすることと同じです．
+EusLisp programs conventionally use the extension `.l`.
+Loading one of these files in the interpreter is equivalent to typing all of its contents. No compile is performed when loading, and there is no entry point (main functions).
 
-例えば，`test.l`というファイルにプログラムを記述した場合，
+A file `test.l` can be loaded by starting the interpreter with the file name as argument
 
 ```bash
 roseus test.l
 ```
 
-としてインタプリタごと起動するか，
-インタプリタを先に起動しておいて，その上で
+or by calling the load function from the interpreter.
+
 ```
 (load "test.l")
 ```
-
-としましょう．
