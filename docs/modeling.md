@@ -75,7 +75,7 @@ For example, let's create a hand that moves the previously created hammer.
            (instance bodyset-link :init (make-cascoords)
                      :bodies (list hammer-stick hammer-body)))
 
-     (setq hammer-stinck2 (make-cylinder 20 20))
+     (setq hammer-stick2 (make-cylinder 20 20))
      (send hammer-stick2 :set-color :green)
      (send hammer-stick2 :rotate (deg2rad 90) :y)
      (send hammer-stick2 :translate (float-vector 0 0 -10))
